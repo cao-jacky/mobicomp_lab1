@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">mobicomp_lab1</string>
+    <string name="time">Time</string>
+    <string name="location">Location</string>
 </resources>
