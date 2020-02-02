@@ -15,12 +15,14 @@ import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
 import android.media.RingtoneManager
 import android.util.Log
+import android.view.View
 import android.widget.*
 import androidx.room.*
 import java.util.*
 import com.example.mobicomp_lab1.dao.ReminderDao
 import com.example.mobicomp_lab1.dataBase.AppDatabase
 import com.example.mobicomp_lab1.entity.Reminder
+import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -30,7 +32,7 @@ class MainActivity : AppCompatActivity() {
     val PERMISSION_ID = 42
     lateinit var mFusedLocationClient: FusedLocationProviderClient
 
-    private lateinit var listView: ListView
+    private lateinit var remindersListView: ListView
 
     private var db: AppDatabase? = null
     private var ReminderDao: ReminderDao? = null
@@ -46,6 +48,14 @@ class MainActivity : AppCompatActivity() {
         ReminderDao = db?.reminderDao()
 
         Observable.fromCallable {
+
+            val fab: View = findViewById(R.id.addItemButton)
+            fab.setOnClickListener { view ->
+                Snackbar.make(view, "Add an item", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null)
+                    .show()
+            }
+
 //            db = AppDatabase.getAppDataBase(context = this)
 //            ReminderDao = db?.reminderDao()
 
@@ -54,15 +64,34 @@ class MainActivity : AppCompatActivity() {
 //            with(ReminderDao){
 //                this?.insertAll(item1)
 //            }
+            remindersListView = findViewById<ListView>(R.id.remindersListView)
             var queryDatabase = db?.reminderDao()?.getAll()
             Log.d("debugging", queryDatabase.toString())
+
+            val listItems = arrayOf(queryDatabase?.size)
+
+            for (i in 0 until queryDatabase?.size!!) {
+                val reminderItem = queryDatabase?.get(i)
+                val rIUID = reminderItem.uid.toString()
+                val rITime = reminderItem.time.toString()
+                val rILoc = reminderItem.location.toString()
+                val rIMess = reminderItem.message.toString()
+
+                val rIArray = arrayOf(rIUID, rITime, rILoc, rIMess)
+
+                Log.d("debugging", rIArray[3])
+
+                listItems[i] = rIUID?.toInt()
+            }
+
+            val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, listItems)
+            remindersListView.adapter = adapter
+
         }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe()
 
-//        listView = findViewById<ListView>(R.id.listView)
-//        val recipeList = Recipe.getRecipesFromFile("recipes.json", this)
-//
+
 //        val listItems = arrayOfNulls<String>(recipeList.size)
 //
 //        for (i in 0 until recipeList.size) {
