@@ -66,25 +66,26 @@ class MainActivity : AppCompatActivity() {
 //            }
             remindersListView = findViewById<ListView>(R.id.remindersListView)
             var queryDatabase = db?.reminderDao()?.getAll()
-            Log.d("debugging", queryDatabase.toString())
+//            Log.d("debugging", queryDatabase.toString())
 
             val listItems = arrayOf(queryDatabase?.size)
 
-            for (i in 0 until queryDatabase?.size!!) {
-                val reminderItem = queryDatabase?.get(i)
-                val rIUID = reminderItem.uid.toString()
-                val rITime = reminderItem.time.toString()
-                val rILoc = reminderItem.location.toString()
-                val rIMess = reminderItem.message.toString()
+//            for (i in 0 until queryDatabase?.size!!) {
+//                val reminderItem = queryDatabase?.get(i)
+//                val rIUID = reminderItem.uid.toString()
+//                val rITime = reminderItem.time.toString()
+//                val rILoc = reminderItem.location.toString()
+//                val rIMess = reminderItem.message.toString()
 
-                val rIArray = arrayOf(rIUID, rITime, rILoc, rIMess)
+//                val rIArray = arrayOf(rIUID, rITime, rILoc, rIMess)
 
-                Log.d("debugging", rIArray[3])
+//                listItems[i] = rIUID?.toInt()
+//            }
 
-                listItems[i] = rIUID?.toInt()
-            }
+//            val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, listItems)
+//            remindersListView.adapter = adapter
 
-            val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, listItems)
+            val adapter = listAdapter(this, ArrayList(queryDatabase!!))
             remindersListView.adapter = adapter
 
         }.subscribeOn(Schedulers.io())
