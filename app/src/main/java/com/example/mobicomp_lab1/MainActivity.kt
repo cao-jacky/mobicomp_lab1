@@ -11,18 +11,29 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
 import android.media.RingtoneManager
-
+import android.util.Log
+import android.widget.*
+import androidx.room.*
+import java.util.*
+import com.example.mobicomp_lab1.dao.ReminderDao
+import com.example.mobicomp_lab1.dataBase.AppDatabase
+import com.example.mobicomp_lab1.entity.Reminder
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 class MainActivity : AppCompatActivity() {
 
     val PERMISSION_ID = 42
     lateinit var mFusedLocationClient: FusedLocationProviderClient
+
+    private lateinit var listView: ListView
+
+    private var db: AppDatabase? = null
+    private var ReminderDao: ReminderDao? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val timeClass = TimeActivity()
@@ -30,6 +41,37 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        db = AppDatabase.getAppDataBase(context = this)
+        ReminderDao = db?.reminderDao()
+
+        Observable.fromCallable {
+//            db = AppDatabase.getAppDataBase(context = this)
+//            ReminderDao = db?.reminderDao()
+
+//            var item1 = Reminder(location = "here", time = System.currentTimeMillis(), message = "test")
+//
+//            with(ReminderDao){
+//                this?.insertAll(item1)
+//            }
+            var queryDatabase = db?.reminderDao()?.getAll()
+            Log.d("debugging", queryDatabase.toString())
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe()
+
+//        listView = findViewById<ListView>(R.id.listView)
+//        val recipeList = Recipe.getRecipesFromFile("recipes.json", this)
+//
+//        val listItems = arrayOfNulls<String>(recipeList.size)
+//
+//        for (i in 0 until recipeList.size) {
+//            val recipe = recipeList[i]
+//            listItems[i] = recipe.title
+//        }
+//
+//        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, listItems)
+//        listView.adapter = adapter
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
