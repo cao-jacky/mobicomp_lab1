@@ -23,6 +23,7 @@
         </activity>
         <activity android:name=".TimeActivity"></activity>
         <activity android:name=".MapActivity"></activity>
+        <receiver android:name=".AlarmReceiver"/>
     </application>
 
 </manifest>
