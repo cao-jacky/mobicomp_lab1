@@ -97,29 +97,26 @@ class MainActivity : AppCompatActivity() {
 //                listItems[i] = rIUID?.toInt()
 //            }
 
-//            alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-//            for (i in 0 until queryDatabase?.size!!) {
-//                var alarmItemIntent = Intent(this, AlarmReceiver::class.java)
-//                pendingIntent = PendingIntent.getBroadcast(this, i, alarmItemIntent, 0)
-//
-//                val reminderItem = queryDatabase?.get(i)
-//                val rITime = reminderItem.time
-//
-//                val cal = Calendar.getInstance()
-//                cal.timeInMillis = rITime!!
-//
-////                // Setting the specific time for the alarm manager to trigger the intent, in this example, the alarm is set to go off at 23:30, update the time according to your need
-////                val calendar = Calendar.getInstance()
-////                calendar.timeInMillis = System.currentTimeMillis()
-////                calendar.set(Calendar.HOUR_OF_DAY, 20)
-////                calendar.set(Calendar.MINUTE, 52)
-//
-//                alarmManager.set(
-//                    AlarmManager.RTC,
-//                    cal.timeInMillis,
-//                    pendingIntent
-//                )
-//            }
+            for (i in 0 until queryDatabase?.size!!) {
+                val reminderItem = queryDatabase?.get(i)
+                val rIItem = reminderItem.message
+
+                var alarmItemIntent = Intent(this, AlarmReceiver::class.java)
+                alarmItemIntent.putExtra("Reminder", rIItem)
+
+                pendingIntent = PendingIntent.getBroadcast(this, i, alarmItemIntent, 0)
+                alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+                val cal = Calendar.getInstance()
+                val rITime = reminderItem.time
+                cal.timeInMillis = rITime!!
+
+                val currTime = System.currentTimeMillis()
+                if (rITime.toInt() > currTime.toInt()) {
+                    alarmManager.setExact(AlarmManager.RTC, cal.timeInMillis, pendingIntent)
+                }
+
+            }
 
         }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
