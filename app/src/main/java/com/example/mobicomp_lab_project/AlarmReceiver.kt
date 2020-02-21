@@ -1,4 +1,4 @@
-package com.example.mobicomp_lab1
+package com.example.mobicomp_lab_project
 
 import android.content.BroadcastReceiver
 import android.content.Context

@@ -1,11 +1,11 @@
-package com.example.mobicomp_lab1.dataBase
+package com.example.mobicomp_lab_project.dataBase
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.mobicomp_lab1.dao.ReminderDao
-import com.example.mobicomp_lab1.entity.Reminder
+import com.example.mobicomp_lab_project.dao.ReminderDao
+import com.example.mobicomp_lab_project.entity.Reminder
 
 @Database(entities = arrayOf(Reminder::class), version = 1)
 abstract class AppDatabase : RoomDatabase() {

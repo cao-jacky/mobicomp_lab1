@@ -1,7 +1,7 @@
-package com.example.mobicomp_lab1.dao
+package com.example.mobicomp_lab_project.dao
 
 import androidx.room.*
-import com.example.mobicomp_lab1.entity.Reminder
+import com.example.mobicomp_lab_project.entity.Reminder
 
 @Dao
 interface ReminderDao {

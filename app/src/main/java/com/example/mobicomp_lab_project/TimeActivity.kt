@@ -1,4 +1,4 @@
-package com.example.mobicomp_lab1
+package com.example.mobicomp_lab_project
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,9 +7,9 @@ import android.widget.CalendarView
 import android.widget.TextView
 import android.widget.TimePicker
 import androidx.appcompat.app.AppCompatActivity
-import com.example.mobicomp_lab1.dao.ReminderDao
-import com.example.mobicomp_lab1.dataBase.AppDatabase
-import com.example.mobicomp_lab1.entity.Reminder
+import com.example.mobicomp_lab_project.dao.ReminderDao
+import com.example.mobicomp_lab_project.dataBase.AppDatabase
+import com.example.mobicomp_lab_project.entity.Reminder
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers

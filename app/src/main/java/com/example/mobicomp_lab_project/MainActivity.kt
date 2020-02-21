@@ -1,4 +1,4 @@
-package com.example.mobicomp_lab1
+package com.example.mobicomp_lab_project
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -13,26 +13,20 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
-import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
-import android.media.RingtoneManager
-import android.util.Log
 import android.view.View
 import android.widget.*
-import androidx.room.*
+import androidx.core.app.ActivityCompat
 import java.util.*
-import com.example.mobicomp_lab1.dao.ReminderDao
-import com.example.mobicomp_lab1.dataBase.AppDatabase
-import com.example.mobicomp_lab1.entity.Reminder
-import com.google.android.material.snackbar.Snackbar
+import com.example.mobicomp_lab_project.dao.ReminderDao
+import com.example.mobicomp_lab_project.dataBase.AppDatabase
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.Marker
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 class MainActivity : AppCompatActivity() {
-
-    val PERMISSION_ID = 42
-    lateinit var mFusedLocationClient: FusedLocationProviderClient
 
     private lateinit var remindersListView: ListView
 
@@ -122,7 +116,7 @@ class MainActivity : AppCompatActivity() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe()
 
-//        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        //mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
 //        val timeButton = findViewById<Button>(R.id.time_button)
 //        timeButton?.setOnClickListener()
@@ -130,13 +124,16 @@ class MainActivity : AppCompatActivity() {
 //            val sysCurrTime = timeClass.pullCurrentTime()
 //            Toast.makeText(this@MainActivity,
 //                sysCurrTime, Toast.LENGTH_LONG).show() }
-//
-//        val locButton = findViewById<Button>(R.id.location_button)
-//        locButton?.setOnClickListener()
-//        {
-//            getLastLocation()
-//        }
-//
+
+        val locButton = findViewById<Button>(R.id.addLocationReminder)
+        locButton?.setOnClickListener()
+        {
+            setContentView(R.layout.activity_map)
+
+            var mapsIntent = Intent(this,MapActivity::class.java)
+            startActivity(mapsIntent)
+        }
+
 //        val playMediaButton = findViewById<Button>(R.id.sound_button)
 //        playMediaButton?.setOnClickListener()
 //        {
@@ -152,89 +149,5 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-//    @SuppressLint("MissingPermission")
-//    fun getLastLocation() {
-//        if (checkPermissions()) {
-//            if (isLocationEnabled()) {
-//
-//                mFusedLocationClient.lastLocation.addOnCompleteListener(this) { task ->
-//                    var location: Location? = task.result
-//                    if (location == null) {
-//                        requestNewLocationData()
-//                    } else {
-//                        findViewById<TextView>(R.id.latTextView).text = location.latitude.toString()
-//                        findViewById<TextView>(R.id.lonTextView).text = location.longitude.toString()
-//                    }
-//                }
-//            } else {
-//                Toast.makeText(this, "Turn on location", Toast.LENGTH_LONG).show()
-//                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-//                startActivity(intent)
-//            }
-//        } else {
-//            requestPermissions()
-//        }
-//    }
-
-//    @SuppressLint("MissingPermission")
-//    private fun requestNewLocationData() {
-//        var mLocationRequest = LocationRequest()
-//        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-//        mLocationRequest.interval = 0
-//        mLocationRequest.fastestInterval = 0
-//        mLocationRequest.numUpdates = 1
-//
-//        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-//        mFusedLocationClient!!.requestLocationUpdates(
-//            mLocationRequest, mLocationCallback,
-//            Looper.myLooper()
-//        )
-//    }
-//
-//    private val mLocationCallback = object : LocationCallback() {
-//        override fun onLocationResult(locationResult: LocationResult) {
-//            var mLastLocation: Location = locationResult.lastLocation
-//            findViewById<TextView>(R.id.latTextView).text = mLastLocation.latitude.toString()
-//            findViewById<TextView>(R.id.lonTextView).text = mLastLocation.longitude.toString()
-//        }
-//    }
-
-//    private fun isLocationEnabled(): Boolean {
-//        var locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-//        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-//            LocationManager.NETWORK_PROVIDER
-//        )
-//    }
-//
-//    private fun checkPermissions(): Boolean {
-//        if (ActivityCompat.checkSelfPermission(
-//                this,
-//                Manifest.permission.ACCESS_COARSE_LOCATION
-//            ) == PackageManager.PERMISSION_GRANTED &&
-//            ActivityCompat.checkSelfPermission(
-//                this,
-//                Manifest.permission.ACCESS_FINE_LOCATION
-//            ) == PackageManager.PERMISSION_GRANTED
-//        ) {
-//            return true
-//        }
-//        return false
-//    }
-//
-//    private fun requestPermissions() {
-//        ActivityCompat.requestPermissions(
-//            this,
-//            arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION),
-//            PERMISSION_ID
-//        )
-//    }
-//
-//    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-//        if (requestCode == PERMISSION_ID) {
-//            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-//                getLastLocation()
-//            }
-//        }
-//    }
 }
 

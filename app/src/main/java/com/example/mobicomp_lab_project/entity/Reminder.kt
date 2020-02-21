@@ -1,4 +1,4 @@
-package com.example.mobicomp_lab1.entity
+package com.example.mobicomp_lab_project.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

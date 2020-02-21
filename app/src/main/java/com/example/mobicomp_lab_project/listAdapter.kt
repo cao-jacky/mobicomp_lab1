@@ -1,13 +1,12 @@
-package com.example.mobicomp_lab1
+package com.example.mobicomp_lab_project
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.ImageView
 import android.widget.TextView
-import com.example.mobicomp_lab1.entity.Reminder
+import com.example.mobicomp_lab_project.entity.Reminder
 
 class listAdapter(private val context: Context, private val dataSource: ArrayList<Reminder>) : BaseAdapter() {
 
