@@ -31,6 +31,8 @@ class MapActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnMarkerCl
     val PERMISSION_ID = 42
     private lateinit var map: GoogleMap
     lateinit var mFusedLocationClient: FusedLocationProviderClient
+    lateinit var geofencingClient: GeofencingClient
+
 
     @SuppressLint("MissingSuperCall")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +46,8 @@ class MapActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnMarkerCl
             .findFragmentById(R.id.map_fragment) as SupportMapFragment;
         mapFragment.getMapAsync(this);
 
+        geofencingClient = LocationServices.getGeofencingClient(this)
+        
     }
 
     override fun onMapReady(map: GoogleMap) {

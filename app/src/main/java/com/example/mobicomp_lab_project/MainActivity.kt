@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
+import android.util.Log
 import com.google.android.gms.location.*
 import android.view.View
 import android.widget.*
@@ -62,38 +63,11 @@ class MainActivity : AppCompatActivity() {
             val adapter = listAdapter(this, ArrayList(queryDatabase!!))
             remindersListView.adapter = adapter
 
-            // Creating the pending intent to send to the BroadcastReceiver
-//            alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-//            val intent = Intent(this, AlarmReceiver::class.java)
-//            pendingIntent = PendingIntent.getBroadcast(this, REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-//
-//            // Setting the specific time for the alarm manager to trigger the intent, in this example, the alarm is set to go off at 23:30, update the time according to your need
-//            val calendar = Calendar.getInstance()
-//            calendar.timeInMillis = System.currentTimeMillis()
-//            calendar.set(Calendar.HOUR_OF_DAY, 20)
-//            calendar.set(Calendar.MINUTE, 52)
-//
-//            alarmManager.set(
-//                AlarmManager.RTC,
-//                calendar.timeInMillis,
-//                pendingIntent
-//            )
-
-//            for (i in 0 until queryDatabase?.size!!) {
-//                val reminderItem = queryDatabase?.get(i)
-//                val rIUID = reminderItem.uid.toString()
-//                val rITime = reminderItem.time.toString()
-//                val rILoc = reminderItem.location.toString()
-//                val rIMess = reminderItem.message.toString()
-//
-//                val rIArray = arrayOf(rIUID, rITime, rILoc, rIMess)
-//
-//                listItems[i] = rIUID?.toInt()
-//            }
-
             for (i in 0 until queryDatabase?.size!!) {
                 val reminderItem = queryDatabase?.get(i)
                 val rIItem = reminderItem.message
+
+                Log.d("debugging", "placing item with message "+rIItem)
 
                 var alarmItemIntent = Intent(this, AlarmReceiver::class.java)
                 alarmItemIntent.putExtra("Reminder", rIItem)
@@ -106,7 +80,9 @@ class MainActivity : AppCompatActivity() {
                 cal.timeInMillis = rITime!!
 
                 val currTime = System.currentTimeMillis()
+                Log.d("debugging", rITime.toInt().toString()+" "+currTime.toInt().toString())
                 if (rITime.toInt() > currTime.toInt()) {
+                    Log.d("debugging", "setting alarm")
                     alarmManager.setExact(AlarmManager.RTC, cal.timeInMillis, pendingIntent)
                 }
 
@@ -115,8 +91,6 @@ class MainActivity : AppCompatActivity() {
         }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe()
-
-        //mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
 //        val timeButton = findViewById<Button>(R.id.time_button)
 //        timeButton?.setOnClickListener()
