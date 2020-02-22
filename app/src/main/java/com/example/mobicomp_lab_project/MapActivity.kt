@@ -25,6 +25,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.MarkerOptions
 
 class MapActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     val PERMISSION_ID = 42
@@ -42,7 +43,7 @@ class MapActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         val mapFragment: SupportMapFragment = supportFragmentManager
             .findFragmentById(R.id.map_fragment) as SupportMapFragment;
         mapFragment.getMapAsync(this);
-        Log.d("test","aaaas")
+
     }
 
     override fun onMapReady(map: GoogleMap) {
@@ -54,6 +55,12 @@ class MapActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnMarkerCl
 //        map.moveCamera(CameraUpdateFactory.newLatLng(myPlace))
 
         map.isMyLocationEnabled = true;
+
+        map.setOnMapClickListener {
+            //allPoints.add(it)
+            map.clear()
+            map.addMarker(MarkerOptions().position(it))
+        }
 
         mFusedLocationClient.lastLocation.addOnCompleteListener(this) { task ->
             var location: Location? = task.result
