@@ -14,9 +14,16 @@ import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
+import android.view.View
+import android.widget.CalendarView
+import android.widget.TextView
+import android.widget.TimePicker
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
+import com.example.mobicomp_lab_project.dao.ReminderDao
+import com.example.mobicomp_lab_project.dataBase.AppDatabase
+import com.example.mobicomp_lab_project.entity.Reminder
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -26,6 +33,10 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import java.util.*
 
 class MapActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     val PERMISSION_ID = 42
@@ -33,6 +44,10 @@ class MapActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnMarkerCl
     lateinit var mFusedLocationClient: FusedLocationProviderClient
     lateinit var geofencingClient: GeofencingClient
 
+    private var db: AppDatabase? = null
+    private var ReminderDao: ReminderDao? = null
+
+    private var markerArray: ArrayList<Marker> = ArrayList<Marker>()
 
     @SuppressLint("MissingSuperCall")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,7 +62,41 @@ class MapActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         mapFragment.getMapAsync(this);
 
         geofencingClient = LocationServices.getGeofencingClient(this)
-        
+
+        val aTR: View = findViewById(R.id.map_create)
+        aTR.setOnClickListener { view ->
+            val mapReminderText: TextView = findViewById(R.id.reminder_message)
+            val tRTString: String = mapReminderText.text.toString()
+
+            db = AppDatabase.getAppDataBase(context = this)
+            ReminderDao = db?.reminderDao()
+
+            for (marker in markerArray) {
+                val position: LatLng = marker.position
+                val pString: String = position.toString()
+
+                Observable.fromCallable {
+                    var newTimeReminder = Reminder(null, location = pString, time = 0, message = tRTString)
+
+                    with(ReminderDao) {
+                        this?.insertAll(newTimeReminder)
+                    }
+                }.subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe()
+
+                val newMainActivity = Intent(this, MainActivity::class.java)
+                finish()
+                startActivity(newMainActivity)
+
+                var queryDatabase = db?.reminderDao()?.getAll()
+                val adapter = listAdapter(this, ArrayList(queryDatabase!!))
+                adapter.notifyDataSetChanged()
+
+            }
+
+        }
+
     }
 
     override fun onMapReady(map: GoogleMap) {
@@ -63,7 +112,9 @@ class MapActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         map.setOnMapClickListener {
             //allPoints.add(it)
             map.clear()
-            map.addMarker(MarkerOptions().position(it))
+            var currMarker: Marker = map.addMarker(MarkerOptions().position(it))
+
+            markerArray.add(currMarker)
         }
 
         mFusedLocationClient.lastLocation.addOnCompleteListener(this) { task ->
@@ -178,8 +229,6 @@ class MapActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnMarkerCl
             }
         }
     }
-
-
 
 }
 

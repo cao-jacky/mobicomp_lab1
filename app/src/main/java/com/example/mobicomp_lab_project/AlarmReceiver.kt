@@ -15,15 +15,15 @@ import kotlin.random.Random
 class AlarmReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val reminderItem= intent.getStringExtra("Reminder")
-        Log.d("debugging", reminderItem)
+//        Log.d("debugging", reminderItem)
         Toast.makeText(context, reminderItem, Toast.LENGTH_LONG).show()
 
         val CHANNEL_ID = "REMINDER_NOTIFICATION_CHANNEL"
         var notificationId = 1589
         notificationId += Random(notificationId).nextInt(1, 30)
-        val message: String = "Notification from MobiComp App!"
+        val message: String = reminderItem
         var notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
-            //.setSmallIcon(R.drawable.ic_alarm_24px)
+            .setSmallIcon(R.drawable.ic_alarm_24px)
             .setContentTitle(context?.getString(R.string.app_name))
             .setContentText(message)
             .setStyle(NotificationCompat.BigTextStyle().bigText(message))

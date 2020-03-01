@@ -24,6 +24,7 @@
         <activity android:name=".TimeActivity"></activity>
         <activity android:name=".MapActivity"></activity>
         <receiver android:name=".AlarmReceiver"/>
+        <receiver android:name=".GeofenceBroadcastReceiver"/>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCmuIvAAFnmA5OIKxMMkPt5GSIhFbAg9jQ"/>

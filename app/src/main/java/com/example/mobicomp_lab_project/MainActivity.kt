@@ -38,6 +38,24 @@ class MainActivity : AppCompatActivity() {
     private lateinit var alarmManager: AlarmManager
     private lateinit var pendingIntent: PendingIntent
 
+    lateinit var geofencingClient: GeofencingClient
+
+    private var geofenceList: ArrayList<Geofence> = ArrayList<Geofence>()
+
+    private fun getGeofencingRequest(): GeofencingRequest {
+        return GeofencingRequest.Builder().apply {
+            setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+            addGeofences(geofenceList)
+        }.build()
+    }
+
+    private val geofencePendingIntent: PendingIntent by lazy {
+        val intent = Intent(this, GeofenceBroadcastReceiver::class.java)
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
+        // addGeofences() and removeGeofences().
+        PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val timeClass = TimeActivity()
         val mapClass = MapActivity()
@@ -47,6 +65,8 @@ class MainActivity : AppCompatActivity() {
 
         db = AppDatabase.getAppDataBase(context = this)
         ReminderDao = db?.reminderDao()
+
+        geofencingClient = LocationServices.getGeofencingClient(this)
 
         Observable.fromCallable {
 
@@ -67,7 +87,7 @@ class MainActivity : AppCompatActivity() {
                 val reminderItem = queryDatabase?.get(i)
                 val rIItem = reminderItem.message
 
-                Log.d("debugging", "placing item with message "+rIItem)
+//                Log.d("debugging", "placing item with message "+rIItem)
 
                 var alarmItemIntent = Intent(this, AlarmReceiver::class.java)
                 alarmItemIntent.putExtra("Reminder", rIItem)
@@ -79,13 +99,42 @@ class MainActivity : AppCompatActivity() {
                 val rITime = reminderItem.time
                 cal.timeInMillis = rITime!!
 
-                val currTime = System.currentTimeMillis()
-                Log.d("debugging", rITime.toInt().toString()+" "+currTime.toInt().toString())
-                if (rITime.toInt() > currTime.toInt()) {
-                    Log.d("debugging", "setting alarm")
-                    alarmManager.setExact(AlarmManager.RTC, cal.timeInMillis, pendingIntent)
-                }
+                val rILoc: String = reminderItem.location.toString()
 
+                if (rITime == 0.toLong()) {
+                    // If a location-based reminder, set a geofence
+//                    Log.d("debugging", rILoc)
+                    geofenceList.add(Geofence.Builder()
+                        .setRequestId(i.toString())
+                        // Set the circular region of this geofence.
+                        .setCircularRegion(
+                            rILoc.substringAfter("(").substringBefore(',').toDouble(),
+                            rILoc.substringAfter(",").substringBefore(')').toDouble(),
+                            10F
+                        )
+
+                        .setExpirationDuration(10000)
+                        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                        .build())
+
+                    geofencingClient?.addGeofences(getGeofencingRequest(), geofencePendingIntent)?.run {
+                        addOnSuccessListener {
+                            // Geofences added
+                            // ...
+                        }
+                        addOnFailureListener {
+                            // Failed to add geofences
+                            // ...
+                        }
+                    }
+
+                } else {
+                    // If a time-based reminder, set an alarm
+                    val currTime = System.currentTimeMillis()
+                    if (rITime.toInt() > currTime.toInt()) {
+                        alarmManager.setExact(AlarmManager.RTC, cal.timeInMillis, pendingIntent)
+                    }
+                }
             }
 
         }.subscribeOn(Schedulers.io())
